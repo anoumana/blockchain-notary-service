@@ -1,6 +1,7 @@
 const SHA256 = require('crypto-js/sha256');
 const BlockClass = require('./Block.js');
 const BlockchainClass = require('./Blockchain.js');
+const MempoolClass = require('./Mempool.js');
 const ReqValidationClass = require('./ReqValidation.js');
 
 /**
@@ -17,6 +18,7 @@ class BlockController {
         //this.blocks = [];
         // Creating the levelSandbox class object
         this.blockChain = new BlockchainClass.Blockchain();
+        this.mempool = new MempoolClass.Mempool();
     
         //this.initializeMockData();
         this.getBlockByIndex();
@@ -95,7 +97,9 @@ class BlockController {
                 if(payload == null){ return "Please include address info"};
                 if(payload.address !== ""){
                     let newReqValidationObj = new ReqValidationClass.ReqValidation(payload.address);
-                    return newReqValidationObj;
+
+                    return this.mempool.addRequestValidation(newReqValidationObj);
+                    //return newReqValidationObj;
                 }
                 else{
                     return 'Please include address info';
