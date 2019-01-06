@@ -1,6 +1,7 @@
 const SHA256 = require('crypto-js/sha256');
 const BlockClass = require('./Block.js');
 const BlockchainClass = require('./Blockchain.js');
+const ReqValidationClass = require('./ReqValidation.js');
 
 /**
  * Controller Definition to encapsulate routes to work with blocks
@@ -16,10 +17,11 @@ class BlockController {
         //this.blocks = [];
         // Creating the levelSandbox class object
         this.blockChain = new BlockchainClass.Blockchain();
-
+    
         //this.initializeMockData();
         this.getBlockByIndex();
         this.postNewBlock();
+        this.postReqValidation();
     }
 
     /**
@@ -72,6 +74,31 @@ class BlockController {
                 }
                 else{
                     return 'Please include block data';
+                }
+
+
+
+            }
+        });
+    }
+
+
+    /**
+     * Implement a POST Endpoint to requestValidation , url: "/api/requestValidation"
+     */
+    postReqValidation() {
+        this.server.route({
+            method: 'POST',
+            path: '/api/requestValidation',
+            handler: (request, h) => {
+                var payload = request.payload   
+                if(payload == null){ return "Please include address info"};
+                if(payload.address !== ""){
+                    let newReqValidationObj = new ReqValidationClass.ReqValidation(payload.address);
+                    return newReqValidationObj;
+                }
+                else{
+                    return 'Please include address info';
                 }
 
 
