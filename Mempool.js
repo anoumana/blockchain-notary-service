@@ -1,6 +1,10 @@
 
+const bitcoinMessage = require('bitcoinjs-message'); 
 const ReqValidationClass = require('./ReqValidation.js');
-const TimeoutRequestsWindowTime = 1*60*1000;
+const RegisteredStarClass = require('./RegisteredStar.js');
+const StarClass = require('./Star.js');
+
+const TimeoutRequestsWindowTime = 5*60*1000;
 
 /* ===== Mempool Class ==========================
 |  Class with a constructor for new Mempool 		|
@@ -8,9 +12,9 @@ const TimeoutRequestsWindowTime = 1*60*1000;
 
 class Mempool{
     constructor(){
-        this.mempool = [];
+        this.mempoolValid = new Map();
         this.timeoutRequestKeys = [];
-        this.timeoutRequests = new Map();
+        this.mempool = new Map();
     }
 
 
@@ -19,12 +23,12 @@ class Mempool{
         let reqValidation = givenReqValidation;
         if(reqValidation !== null){
             let address = reqValidation.walletAddress;
-            let storedReqValidation = self.timeoutRequests.get(address);
+            let storedReqValidation = self.mempool.get(address);
             if(storedReqValidation === undefined){
                 
                 console.log("request is new");
                 self.timeoutRequestKeys.push(address);
-                self.timeoutRequests.set(address, reqValidation);
+                self.mempool.set(address, reqValidation);
                 self.timeoutRequestKeys[address]=setTimeout(function(){ 
                     self.removeValidationRequest(reqValidation.walletAddress) 
                 }, TimeoutRequestsWindowTime );
@@ -34,21 +38,57 @@ class Mempool{
                 reqValidation = storedReqValidation;
                 console.log("request exists");
             }
+            reqValidation.validationWindow = self.getTimeLeft(reqValidation);
 
-            let timeElapse = (new Date().getTime().toString().slice(0,-3)) - reqValidation.requestTimeStamp;
-            let timeLeft = (TimeoutRequestsWindowTime/1000) - timeElapse;
-            reqValidation.validationWindow = timeLeft;
         }
         return reqValidation;
      }
 
+     getTimeLeft(reqValidation){
+        let timeElapse = (new Date().getTime().toString().slice(0,-3)) - reqValidation.requestTimeStamp;
+        let timeLeft = (TimeoutRequestsWindowTime/1000) - timeElapse;
+        return timeLeft;
+     }
+
+
      removeValidationRequest(walletAddress){
         let self = this;
-        self.timeoutRequests.delete(walletAddress);
+        self.mempool.delete(walletAddress);
         let index = self.timeoutRequestKeys.indexOf(walletAddress);
         delete self.timeoutRequestKeys[index];
      }
  
+
+     validateRequestByWallet(address, signature){
+        let self = this;
+        let storedReqValidation = self.mempool.get(address);
+        if(storedReqValidation === undefined){
+            return "Please add request using /api/requestValidation before calling validate api";
+        }
+    
+        //verify time left
+        let timeLeft = self.getTimeLeft(storedReqValidation);
+        if(timeLeft === 0){
+            return "Please add request using /api/requestValidation before calling validate api";
+        }
+
+        let message = storedReqValidation.message;
+        //bitcoinMessage.verify
+        let isMessageValid = bitcoinMessage.verify(message, address, signature);
+        let validRequest = null;
+        if(isMessageValid){
+            let star = new StarClass.Star(message, address, "Valid");
+            validRequest = new RegisteredStarClass.RegisteredStar(star);
+
+            //add it to the valid mempool
+            this.mempoolValid.set(address, validRequest);
+
+            //cleanup timeouts and temporary mempool storage 
+            clearTimeout(self.timeoutRequestKeys[address]);
+            self.removeValidationRequest(address);
+        }
+        return validRequest;
+     }
 
 }
 

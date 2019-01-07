@@ -24,6 +24,7 @@ class BlockController {
         this.getBlockByIndex();
         this.postNewBlock();
         this.postReqValidation();
+        this.postValidate();
     }
 
     /**
@@ -104,9 +105,31 @@ class BlockController {
                 else{
                     return 'Please include address info';
                 }
+            }
+        });
+    }
 
 
+    /**
+     * Implement a POST Endpoint to validate , url: "/api/validate"
+     */
+    postValidate() {
+        this.server.route({
+            method: 'POST',
+            path: '/api/validate',
+            handler: (request, h) => {
+                var payload = request.payload   
+                if(payload == null){ return "Please include message and signature info"};
+                let address = payload.address;
+                let signature = payload.signature;
+                if(address === "" || address === null){
+                    return "Please include message and signature info";
+                }
+                if(signature === "" || signature === null){
+                    return "Please include message and signature info";
+                }
 
+                return this.mempool.validateRequestByWallet(address, signature);
             }
         });
     }
