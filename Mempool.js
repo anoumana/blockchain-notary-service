@@ -1,8 +1,8 @@
 
 const bitcoinMessage = require('bitcoinjs-message'); 
 const ReqValidationClass = require('./ReqValidation.js');
-const RegisteredStarClass = require('./RegisteredStar.js');
-const StarClass = require('./Star.js');
+const RegisteredValidatedMsgClass = require('./RegisteredValidatedMsg.js');
+const ValidatedMsgClass = require('./ValidatedMsg.js');
 
 const TimeoutRequestsWindowTime = 5*60*1000;
 
@@ -77,8 +77,8 @@ class Mempool{
         let isMessageValid = bitcoinMessage.verify(message, address, signature);
         let validRequest = null;
         if(isMessageValid){
-            let star = new StarClass.Star(message, address, "Valid");
-            validRequest = new RegisteredStarClass.RegisteredStar(star);
+            let validatedMsg = new ValidatedMsgClass.ValidatedMsg(message, address,timeLeft, "Valid");
+            validRequest = new RegisteredValidatedMsgClass.RegisteredValidatedMsg(validatedMsg);
 
             //add it to the valid mempool
             this.mempoolValid.set(address, validRequest);
