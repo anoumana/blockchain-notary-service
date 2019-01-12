@@ -35,11 +35,20 @@ npm install bitcoinjs-message --save
 
 - To Test, use curl or postman 
 
-- To add new block, POST  localhost:8000/api/block with form-data
-key:data  and value:"put your block data here"
+- To add new block, POST  localhost:8000/block with "Content-Type":"application/json" and pass the post body as a raw json
+```
+{
+	"address": "19xaiMqayaNrn3x7AjV5cU4Mk5f5prRVpL",
+	"star": {
+				"dec": "68° 52' 56.9",
+				"ra": "16h 29m 1.0s",
+				"story": "Found star using https://www.google.com/sky/"
+			}
+}
+```
 
 - To get a block at a specific blockheight, 
-	-- GET  localhost:8000/api/block/:blockheight 
+	-- GET  localhost:8000/block/:blockheight 
 
 - To add new message request to mempool, POST  localhost:8000/api/requestValidation with form-data
 key:address  and value:"put your wallet address here"

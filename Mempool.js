@@ -17,6 +17,10 @@ class Mempool{
         this.mempool = new Map();
     }
 
+    verifyAddressRequest(address){
+        let self = this;
+        return self.mempoolValid.has(address);
+    }
 
     addRequestValidation(givenReqValidation){
         let self = this;

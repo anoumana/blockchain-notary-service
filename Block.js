@@ -16,7 +16,7 @@ class StarBody{
 		let dataObj = JSON.parse(data);
 		this.address = dataObj.address;
 		this.star = dataObj.star;
-		this.star.storyDecoded = this.star.story;
+		//this.star.storyDecoded = this.star.story;
 		this.star.story = Buffer.from(this.star.story, 'utf8').toString('hex');
 	}
 }

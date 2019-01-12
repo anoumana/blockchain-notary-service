@@ -58,10 +58,13 @@ class BlockController {
     postNewBlock() {
         this.server.route({
             method: 'POST',
-            path: '/api/block',
+            path: '/block',
             handler: (request, h) => {
                 var payload = request.payload   
                 if(payload == null){ return "Please include block data"};
+                //mempool verifyAddressRequest
+                let isValid = this.mempool.verifyAddressRequest(payload.address);
+                if(!isValid){return 'Address is not Verified, please use /api/requestValidation and /api/validate to validate the address first'}
                 let newBlock = new BlockClass.Block(JSON.stringify(payload))
                 return this.blockChain.addBlock(newBlock).then(function(value){
                     //console.log("add block + " + payload);
@@ -74,41 +77,10 @@ class BlockController {
                     }
                 });
 
-
-
             }
         });
     }
 
-    // postNewBlock() {
-    //     this.server.route({
-    //         method: 'POST',
-    //         path: '/api/block',
-    //         handler: (request, h) => {
-    //             var payload = request.payload   
-    //             if(payload == null){ return "Please include block data"};
-    //             if(payload.data !== ""){
-    //                 let newBlock = new BlockClass.Block(payload.data)
-    //                 return this.blockChain.addBlock(newBlock).then(function(value){
-    //                     console.log("add block + " + payload.data);
-    //                     if( value !== null) {
-    //                         //let blockValue = JSON.stringify(value);
-    //                         return value;
-    //                     }
-    //                     else {
-    //                         return 'Block was not successfully added';
-    //                     }
-    //                 });
-    //             }
-    //             else{
-    //                 return 'Please include block data';
-    //             }
-
-
-
-    //         }
-    //     });
-    // }
 
     /**
      * Implement a POST Endpoint to requestValidation , url: "/api/requestValidation"
@@ -124,7 +96,6 @@ class BlockController {
                     let newReqValidationObj = new ReqValidationClass.ReqValidation(payload.address);
 
                     return this.mempool.addRequestValidation(newReqValidationObj);
-                    //return newReqValidationObj;
                 }
                 else{
                     return 'Please include address info';
