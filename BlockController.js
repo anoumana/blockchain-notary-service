@@ -62,22 +62,17 @@ class BlockController {
             handler: (request, h) => {
                 var payload = request.payload   
                 if(payload == null){ return "Please include block data"};
-                if(payload.data !== ""){
-                    let newBlock = new BlockClass.Block(payload.data)
-                    return this.blockChain.addBlock(newBlock).then(function(value){
-                        console.log("add block + " + payload.data);
-                        if( value !== null) {
-                            //let blockValue = JSON.stringify(value);
-                            return value;
-                        }
-                        else {
-                            return 'Block was not successfully added';
-                        }
-                    });
-                }
-                else{
-                    return 'Please include block data';
-                }
+                let newBlock = new BlockClass.Block(JSON.stringify(payload))
+                return this.blockChain.addBlock(newBlock).then(function(value){
+                    //console.log("add block + " + payload);
+                    if( value !== null) {
+                        //let blockValue = JSON.stringify(value);
+                        return value;
+                    }
+                    else {
+                        return 'Block was not successfully added';
+                    }
+                });
 
 
 
@@ -85,6 +80,35 @@ class BlockController {
         });
     }
 
+    // postNewBlock() {
+    //     this.server.route({
+    //         method: 'POST',
+    //         path: '/api/block',
+    //         handler: (request, h) => {
+    //             var payload = request.payload   
+    //             if(payload == null){ return "Please include block data"};
+    //             if(payload.data !== ""){
+    //                 let newBlock = new BlockClass.Block(payload.data)
+    //                 return this.blockChain.addBlock(newBlock).then(function(value){
+    //                     console.log("add block + " + payload.data);
+    //                     if( value !== null) {
+    //                         //let blockValue = JSON.stringify(value);
+    //                         return value;
+    //                     }
+    //                     else {
+    //                         return 'Block was not successfully added';
+    //                     }
+    //                 });
+    //             }
+    //             else{
+    //                 return 'Please include block data';
+    //             }
+
+
+
+    //         }
+    //     });
+    // }
 
     /**
      * Implement a POST Endpoint to requestValidation , url: "/api/requestValidation"
