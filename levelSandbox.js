@@ -56,6 +56,36 @@ class LevelSandbox {
        });
     }
 
+
+  	// Get all data from levelDB  (Promise)
+  	getValueFromLevelDBData(keyInValue, valueInValue){
+        let self = this; 
+        var dataArray = [];
+        let key = keyInValue;
+        return new Promise(function(resolve) {
+            self.db.createReadStream()
+            .on('data', function (data) {
+                //check for the key in the value
+                let val = JSON.parse(data.value);
+                let value = val[key];
+                console.log("value in getValue " + value);
+                if(value === valueInValue){
+                    dataArray.push(val);
+                    console.log('getKeyinValueData = ', JSON.stringify(val));
+                }
+            })
+            .on('error', function (err) {
+                // reject with error
+                console.log("error " + err);
+                resolve(dataArray);
+            })
+            .on('close', function () {
+                //resolve with the count value
+                resolve(dataArray);
+            });
+       });
+    }
+
     // Add data to levelDB with key and value (Promise)
     addLevelDBData(key, value) {
         let self = this;

@@ -125,6 +125,17 @@ class Blockchain{
         })
     }
 
+	getBlockByHash(hashValue){
+		return new Promise((resolve) => {
+            db.getValueFromLevelDBData("hash", hashValue).then(function(value){
+								console.log("hashValue sent to getBlockWithHash :" + hashValue);
+								console.log("block val: " + value);
+								resolve(value);
+            });
+        })
+
+	}
+
     // get block
     getBlock(blockHeight){
 			return new Promise((resolve) => {

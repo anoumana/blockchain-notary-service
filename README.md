@@ -25,17 +25,21 @@ npm install crypto-js --save
 ```
 npm install level --save
 ```
-const bitcoinMessage = require('bitcoinjs-message'); 
 - Install bitcoinjs-message with --save flag
 ```
 npm install bitcoinjs-message --save
+```
+
+- Install hex2ascii with --save flag
+```
+npm install hex2ascii --save
 ```
 
 - Launch the application by running npm start 
 
 - To Test, use curl or postman 
 
-- To add new block, POST  localhost:8000/block with "Content-Type":"application/json" and pass the post body as a raw json
+- To add new star block, POST  localhost:8000/block with "Content-Type":"application/json" and pass the post body as a raw json
 ```
 {
 	"address": "19xaiMqayaNrn3x7AjV5cU4Mk5f5prRVpL",
@@ -46,6 +50,9 @@ npm install bitcoinjs-message --save
 			}
 }
 ```
+
+- To get a star block by its hash value, 
+	-- GET  localhost:8000/stars/hash/:hashValue 
 
 - To get a block at a specific blockheight, 
 	-- GET  localhost:8000/block/:blockheight 

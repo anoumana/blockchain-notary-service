@@ -1,4 +1,5 @@
 const SHA256 = require('crypto-js/sha256');
+const hex2ascii = require('hex2ascii');
 const BlockClass = require('./Block.js');
 const BlockchainClass = require('./Blockchain.js');
 const MempoolClass = require('./Mempool.js');
@@ -22,9 +23,40 @@ class BlockController {
     
         //this.initializeMockData();
         this.getBlockByIndex();
+        this.getStarBlockByHash();
         this.postNewBlock();
         this.postReqValidation();
         this.postValidate();
+    }
+
+    /**
+     * Implement a GET Endpoint to retrieve a star block by hash, url: "/stars/hash/{hash}"
+     */
+    getStarBlockByHash() {
+        this.server.route({
+            method: 'GET',
+            path: '/stars/hash/{hash}',
+            handler: (request, h) => {
+                
+                let hashValue = request.params.hash;
+
+                return this.blockChain.getBlockByHash(hashValue).then(function(valueArray){
+                    console.log("block chain getStarBlockByHash + " + valueArray);
+                    if( valueArray === undefined) {
+                        return `Invalid block  ${encodeURIComponent(hashValue)}`;
+                    }
+                    else {
+                        //add decode info to the response block
+                        valueArray.forEach(function (value) {
+                            value.body.star.storyDecoded = hex2ascii(value.body.star.story);
+                            console.log(JSON.stringify(value));
+                        });
+                        return valueArray;
+                    }
+                });
+                   
+            }
+        });
     }
 
     /**
@@ -67,9 +99,9 @@ class BlockController {
                 if(!isValid){return 'Address is not Verified, please use /api/requestValidation and /api/validate to validate the address first'}
                 let newBlock = new BlockClass.Block(JSON.stringify(payload))
                 return this.blockChain.addBlock(newBlock).then(function(value){
-                    //console.log("add block + " + payload);
                     if( value !== null) {
-                        //let blockValue = JSON.stringify(value);
+                        //add decode info to the response block
+                        value.body.star.storyDecoded = hex2ascii(value.body.star.story);
                         return value;
                     }
                     else {
