@@ -118,7 +118,7 @@ class BlockController {
     }
 
     /**
-     * Implement a POST Endpoint to add a new Block, url: "/api/block"
+     * Implement a POST Endpoint to add a new Block, url: "/block"
      */
     postNewBlock() {
         this.server.route({
@@ -127,9 +127,11 @@ class BlockController {
             handler: (request, h) => {
                 var payload = request.payload   
                 if(payload == null){ return "Please include block data"};
+                if(Array.isArray(payload)){ return "Please include only one star block data"};
+
                 //mempool verifyAddressRequest
                 let isValid = this.mempool.verifyAddressRequest(payload.address);
-                if(!isValid){return 'Address is not Verified, please use /api/requestValidation and /api/validate to validate the address first'}
+                if(!isValid){return 'Address is not Verified, please use /requestValidation and /message-signature/validate to validate the address first'}
                 let newBlock = new BlockClass.Block(JSON.stringify(payload))
                 return this.blockChain.addBlock(newBlock).then(function(value){
                     if( value !== null) {
@@ -148,12 +150,12 @@ class BlockController {
 
 
     /**
-     * Implement a POST Endpoint to requestValidation , url: "/api/requestValidation"
+     * Implement a POST Endpoint to requestValidation , url: "/requestValidation"
      */
     postReqValidation() {
         this.server.route({
             method: 'POST',
-            path: '/api/requestValidation',
+            path: '/requestValidation',
             handler: (request, h) => {
                 var payload = request.payload   
                 if(payload == null){ return "Please include address info"};
@@ -171,12 +173,12 @@ class BlockController {
 
 
     /**
-     * Implement a POST Endpoint to validate , url: "/api/validate"
+     * Implement a POST Endpoint to validate , url: "/message-signature/validate"
      */
     postValidate() {
         this.server.route({
             method: 'POST',
-            path: '/api/validate',
+            path: '/message-signature/validate',
             handler: (request, h) => {
                 var payload = request.payload   
                 if(payload == null){ return "Please include message and signature info"};

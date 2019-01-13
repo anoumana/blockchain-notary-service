@@ -77,7 +77,7 @@ class Blockchain{
 								console.log("Error getting pblock");
 							}else {
 								console.log(result);
-								newBlock.previousBlockHash = JSON.parse(result).hash;
+								newBlock.previousBlockHash = result.hash;
 								// Block hash with SHA256 using newBlock and converting to a string
 								//newBlock.hash = SHA256(JSON.stringify(newBlock)).toString();
 								return result;
@@ -85,7 +85,7 @@ class Blockchain{
 						})
 					//.catch((err) => { console.log(err); }
 					.then(function(result){
-						let pBlock = JSON.parse(result);
+						let pBlock = result;
 						newBlock.previousBlockHash = pBlock.hash;
 						//block height
 						newBlock.height =chainLength;
