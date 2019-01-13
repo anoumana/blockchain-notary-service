@@ -51,8 +51,11 @@ npm install hex2ascii --save
 }
 ```
 
-- To get a star block by its hash value, 
+- To get  star block by its hash value, 
 	-- GET  localhost:8000/stars/hash/:hashValue 
+
+- To get star blocks by address, 
+	-- GET  localhost:8000/stars/address/:address 
 
 - To get a block at a specific blockheight, 
 	-- GET  localhost:8000/block/:blockheight 

@@ -24,6 +24,7 @@ class BlockController {
         //this.initializeMockData();
         this.getBlockByIndex();
         this.getStarBlockByHash();
+        this.getStarBlocksByAddress();
         this.postNewBlock();
         this.postReqValidation();
         this.postValidate();
@@ -37,10 +38,39 @@ class BlockController {
             method: 'GET',
             path: '/stars/hash/{hash}',
             handler: (request, h) => {
-                
+ 
                 let hashValue = request.params.hash;
-
                 return this.blockChain.getBlockByHash(hashValue).then(function(valueArray){
+                    console.log("block chain getStarBlockByHash + " + valueArray);
+                    if( valueArray === undefined) {
+                        return `Invalid block  ${encodeURIComponent(hashValue)}`;
+                    }
+                    else {
+                        //add decode info to the response block
+                        valueArray.forEach(function (value) {
+                            value.body.star.storyDecoded = hex2ascii(value.body.star.story);
+                            console.log(JSON.stringify(value));
+                        });
+                        return valueArray;
+                    }
+                });
+                   
+            }
+        });
+    }
+
+    /**
+     * Implement a GET Endpoint to retrieve a star block by hash, url: "/stars/hash/{address}"
+     */
+    getStarBlocksByAddress() {
+        this.server.route({
+            method: 'GET',
+            path: '/stars/address/{address}',
+            handler: (request, h) => {
+                
+                let address = request.params.address;
+
+                return this.blockChain.getBlockByAddress(address).then(function(valueArray){
                     console.log("block chain getStarBlockByHash + " + valueArray);
                     if( valueArray === undefined) {
                         return `Invalid block  ${encodeURIComponent(hashValue)}`;

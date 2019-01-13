@@ -57,7 +57,7 @@ class LevelSandbox {
     }
 
 
-  	// Get all data from levelDB  (Promise)
+  	// Get filtered value data from levelDB  (Promise)
   	getValueFromLevelDBData(keyInValue, valueInValue){
         let self = this; 
         var dataArray = [];
@@ -72,6 +72,40 @@ class LevelSandbox {
                 if(value === valueInValue){
                     dataArray.push(val);
                     console.log('getKeyinValueData = ', JSON.stringify(val));
+                }
+            })
+            .on('error', function (err) {
+                // reject with error
+                console.log("error " + err);
+                resolve(dataArray);
+            })
+            .on('close', function () {
+                //resolve with the count value
+                resolve(dataArray);
+            });
+       });
+    }
+
+  	// Get filtered value data from levelDB  (Promise)
+  	getChildValueFromLevelDBData(keyInVal1, KeyInVal2, valueInValue){
+        let self = this; 
+        var dataArray = [];
+        //let key = keyInValue;
+        return new Promise(function(resolve) {
+            self.db.createReadStream()
+            .on('data', function (data) {
+                //check for the key in the value
+                let val = JSON.parse(data.value);
+                if(val !== undefined){
+                    let val1 = val[keyInVal1];
+                    if(val1 !== undefined){
+                        let value = val1[KeyInVal2]
+                        console.log("value in getChildValue " + value);
+                        if(value === valueInValue){
+                            dataArray.push(val);
+                            console.log('getKeyinValueData = ', JSON.stringify(val));
+                        }
+                    }
                 }
             })
             .on('error', function (err) {

@@ -136,6 +136,17 @@ class Blockchain{
 
 	}
 
+	getBlockByAddress(address){
+		return new Promise((resolve) => {
+            db.getChildValueFromLevelDBData("body", "address", address).then(function(value){
+								console.log("address sent to getBlockByAddress :" + address);
+								console.log("block val: " + value);
+								resolve(value);
+            });
+        })
+
+	}
+
     // get block
     getBlock(blockHeight){
 			return new Promise((resolve) => {
