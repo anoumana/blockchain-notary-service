@@ -22,7 +22,7 @@ class BlockController {
         this.mempool = new MempoolClass.Mempool();
     
         //this.initializeMockData();
-        this.getBlockByIndex();
+        this.getBlockByBlockHeight();
         this.getStarBlockByHash();
         this.getStarBlocksByAddress();
         this.postNewBlock();
@@ -90,15 +90,15 @@ class BlockController {
     }
 
     /**
-     * Implement a GET Endpoint to retrieve a block by index, url: "/api/block/:index"
+     * Implement a GET Endpoint to retrieve a block by index, url: "/block/{blockHeight}"
      */
-    getBlockByIndex() {
+    getBlockByBlockHeight() {
         this.server.route({
             method: 'GET',
-            path: '/api/block/{index}',
+            path: '/block/{blockHeight}',
             handler: (request, h) => {
                 
-                let blockHeight = request.params.index;
+                let blockHeight = request.params.blockHeight;
 
                 return this.blockChain.getBlock(blockHeight).then(function(value){
                     console.log("block chain get block + " + value);
@@ -106,6 +106,9 @@ class BlockController {
                         return `Invalid block  ${encodeURIComponent(blockHeight)}`;
                     }
                     else {
+                        if(value.body.star !== undefined){
+                            value.body.star.storyDecoded = hex2ascii(value.body.star.story);
+                        }
                         return value;
                     }
                 });

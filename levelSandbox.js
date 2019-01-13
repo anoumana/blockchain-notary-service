@@ -27,7 +27,7 @@ class LevelSandbox {
                     }
                 }else {
                 //  console.log("get block from db" + key + " val" + JSON.stringify(value));
-                    resolve(value);
+                    resolve(JSON.parse(value));
                 }
             });
         });
