@@ -3,10 +3,16 @@
 |  ===============================================*/
 
 class Block {
-	constructor(data){
+	constructor(data, genesis){
 		this.hash = "";
 		this.height = 0;
-		this.body = new StarBody(data);
+		if(arguments.length === 2)
+		{
+			if(genesis)
+				this.body = data;
+		}
+		else
+			this.body = new StarBody(data);
 		this.time = new Date().getTime().toString().slice(0,-3);
 	}
 }

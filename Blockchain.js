@@ -34,7 +34,7 @@ class Blockchain{
 				console.log("in second then " +chainLength);
 				if (chainLength == 0 ){
 					// create Genesis block if it is the first block of the chain
-					let gBlock = new BlockClass.Block("First block in the chain - Genesis block");
+					let gBlock = new BlockClass.Block("First block in the chain - Genesis block", true);
 					gBlock.hash =  SHA256(JSON.stringify(gBlock)).toString();
 					//add to levelDB
 					db.addLevelDBData(0, JSON.stringify(gBlock).toString())
