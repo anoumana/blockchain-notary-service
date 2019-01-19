@@ -1,0 +1,18 @@
+{
+  "name": "blockchain-notary-service",
+  "version": "1.0.0",
+  "description": "These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bitcoinjs-message": "^2.0.0",
+    "crypto-js": "^3.1.9-1",
+    "hapi": "^17.8.1",
+    "hex2ascii": "0.0.3",
+    "level": "^4.0.0"
+  }
+}

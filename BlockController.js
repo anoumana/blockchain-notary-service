@@ -125,18 +125,30 @@ class BlockController {
             method: 'POST',
             path: '/block',
             handler: (request, h) => {
-                var payload = request.payload   
+                let self = this;
+                var payload = request.payload;   
                 if(payload == null){ return "Please include block data"};
                 if(Array.isArray(payload)){ return "Please include only one star block data"};
+                // verify block has star data
+                var newBlock;
+                try{
+                    newBlock = new BlockClass.Block(payload)
+                    let starData = newBlock.body.star;
+                    if(starData.dec === null ||  starData.dec === undefined){ return "Please include star data"};
+                    if(starData.ra === null ||  starData.ra === undefined){ return "Please include star data"};
+                    if(starData.story === null ||  starData.story === undefined){ return "Please include star data"};
+                 }catch(err) {return "Please include address and star data" };
 
                 //mempool verifyAddressRequest
-                let isValid = this.mempool.verifyAddressRequest(payload.address);
+                let walletAddress = payload.address;
+                let isValid = this.mempool.verifyAddressRequest(walletAddress);
                 if(!isValid){return 'Address is not Verified, please use /requestValidation and /message-signature/validate to validate the address first'}
-                let newBlock = new BlockClass.Block(JSON.stringify(payload))
                 return this.blockChain.addBlock(newBlock).then(function(value){
                     if( value !== null) {
                         //add decode info to the response block
                         value.body.star.storyDecoded = hex2ascii(value.body.star.story);
+                        //clean up the mempool address verification
+                        self.mempool.removeValidAddressFromMempool(walletAddress);
                         return value;
                     }
                     else {

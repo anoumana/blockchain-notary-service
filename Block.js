@@ -19,7 +19,11 @@ class Block {
 
 class StarBody{
 	constructor(data){
-		let dataObj = JSON.parse(data);
+		var dataObj
+		if(typeof data === 'string')
+			dataObj = JSON.parse(data);
+		else 
+			dataObj = data;
 		this.address = dataObj.address;
 		this.star = dataObj.star;
 		//this.star.storyDecoded = this.star.story;

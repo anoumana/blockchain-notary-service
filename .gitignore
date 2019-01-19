@@ -81,3 +81,9 @@ typings/
 
 # Serverless directories
 .serverless
+
+# level db
+chaindata/
+
+# pkg lock
+package-lock.json

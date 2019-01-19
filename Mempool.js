@@ -62,6 +62,10 @@ class Mempool{
         delete self.timeoutRequestKeys[index];
      }
  
+     removeValidAddressFromMempool(walletAddress){
+        let self = this;
+        self.mempoolValid.delete(walletAddress);
+     }
 
      validateRequestByWallet(address, signature){
         let self = this;

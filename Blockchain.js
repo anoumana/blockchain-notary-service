@@ -52,10 +52,10 @@ class Blockchain{
 						let ggBlock = JSON.parse(result);
 						newBlock.previousBlockHash = ggBlock.hash;
 						// Block hash with SHA256 using newBlock and converting to a string
-						newBlock.hash = SHA256(JSON.stringify(newBlock)).toString();
+						newBlock.hash = SHA256(JSON.stringify(newBlock));
 						console.log("Block :" + JSON.stringify(newBlock));
 						newBlock.height =chainLength+1;
-						db.addLevelDBData(newBlock.height, JSON.stringify(newBlock).toString())
+						db.addLevelDBData(newBlock.height, JSON.stringify(newBlock))
 							.then((result) => {
 								if(!result) {
 										console.log("Error Adding data");
