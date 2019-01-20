@@ -24,14 +24,14 @@ class BlockController {
         //this.initializeMockData();
         this.getBlockByBlockHeight();
         this.getStarBlockByHash();
-        this.getStarBlocksByAddress();
+        this.getStarBlocks();
         this.postNewBlock();
         this.postReqValidation();
         this.postValidate();
     }
 
     /**
-     * Implement a GET Endpoint to retrieve a star block by hash, url: "/stars/hash/{hash}"
+     * Implement a GET Endpoint to retrieve a star block by hash, url: "/stars/{hash}"
      */
     getStarBlockByHash() {
         this.server.route({
@@ -60,31 +60,59 @@ class BlockController {
     }
 
     /**
-     * Implement a GET Endpoint to retrieve a star block by hash, url: "/stars/hash/{address}"
+     * Implement a GET Endpoint to retrieve a star block by hash or by address
      */
-    getStarBlocksByAddress() {
+    getStarBlocks() {
         this.server.route({
             method: 'GET',
-            path: '/stars/address/{address}',
+            path: '/stars/{queryParam}',
             handler: (request, h) => {
                 
-                let address = request.params.address;
+                let query = request.params.queryParam;
+                let queryParts = query.split(':');
 
-                return this.blockChain.getBlockByAddress(address).then(function(valueArray){
-                    console.log("block chain getStarBlockByHash + " + valueArray);
-                    if( valueArray === undefined) {
-                        return `Invalid block  ${encodeURIComponent(hashValue)}`;
-                    }
-                    else {
-                        //add decode info to the response block
-                        valueArray.forEach(function (value) {
-                            value.body.star.storyDecoded = hex2ascii(value.body.star.story);
-                            console.log(JSON.stringify(value));
-                        });
-                        return valueArray;
-                    }
-                });
-                   
+                var address;
+                var hashValue;
+                if(queryParts[0] === "address")
+                    address = queryParts[1];
+
+                if(queryParts[0] === "hash")
+                    hashValue = queryParts[1];
+
+                if(address !== undefined ){
+                    return this.blockChain.getBlockByAddress(address).then(function(valueArray){
+                        console.log("block chain getBlockByAddress + " + valueArray);
+                        if( valueArray === undefined) {
+                            return `Invalid block  ${encodeURIComponent(address)}`;
+                        }
+                        else {
+                            //add decode info to the response block
+                            valueArray.forEach(function (value) {
+                                value.body.star.storyDecoded = hex2ascii(value.body.star.story);
+                                console.log(JSON.stringify(value));
+                            });
+                            return valueArray;
+                        }
+                    });
+                }
+
+                if(hashValue !== undefined ){
+                    return this.blockChain.getBlockByHash(hashValue).then(function(valueArray){
+                        console.log("block chain getStarBlockByHash + " + valueArray);
+                        if( valueArray === undefined) {
+                            return `Invalid block  ${encodeURIComponent(hashValue)}`;
+                        }
+                        else {
+                            //add decode info to the response block
+                            valueArray.forEach(function (value) {
+                                value.body.star.storyDecoded = hex2ascii(value.body.star.story);
+                                console.log(JSON.stringify(value));
+                            });
+                            return valueArray;
+                        }
+                    });
+
+                }
             }
         });
     }
@@ -140,7 +168,10 @@ class BlockController {
                  }catch(err) {return "Please include address and star data" };
 
                 //mempool verifyAddressRequest
-                let walletAddress = payload.address;
+                var walletAddress;
+                if(typeof payload === 'string') walletAddress = JSON.parse(payload).address;
+                else walletAddress = payload.address;
+                
                 let isValid = this.mempool.verifyAddressRequest(walletAddress);
                 if(!isValid){return 'Address is not Verified, please use /requestValidation and /message-signature/validate to validate the address first'}
                 return this.blockChain.addBlock(newBlock).then(function(value){

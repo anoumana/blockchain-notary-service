@@ -37,7 +37,7 @@ class Blockchain{
 					let gBlock = new BlockClass.Block("First block in the chain - Genesis block", true);
 					gBlock.hash =  SHA256(JSON.stringify(gBlock)).toString();
 					//add to levelDB
-					db.addLevelDBData(0, JSON.stringify(gBlock).toString())
+					db.addLevelDBData(0, JSON.stringify(gBlock))
 					.then((result) => {
 						if(!result) {
 								console.log("Error Adding gdata");
@@ -52,7 +52,7 @@ class Blockchain{
 						let ggBlock = JSON.parse(result);
 						newBlock.previousBlockHash = ggBlock.hash;
 						// Block hash with SHA256 using newBlock and converting to a string
-						newBlock.hash = SHA256(JSON.stringify(newBlock));
+						newBlock.hash = SHA256(JSON.stringify(newBlock)).toString();
 						console.log("Block :" + JSON.stringify(newBlock));
 						newBlock.height =chainLength+1;
 						db.addLevelDBData(newBlock.height, JSON.stringify(newBlock))
